@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-prescription {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body.printing-prescription * {
+    visibility: hidden;
+  }
+
+  body.printing-prescription div {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.printing-prescription #printable-prescription-sheet,
+  body.printing-prescription #printable-prescription-sheet * {
+    visibility: visible;
+  }
+
+  body.printing-prescription #printable-prescription-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .prescription-no-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .prescription-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .prescription-table thead {
+    display: table-header-group;
+  }
+}

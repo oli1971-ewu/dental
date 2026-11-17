@@ -1,0 +1,1475 @@
+# MASTER IMPLEMENTATION PROMPT: PROFESSIONAL DENTAL CLINIC MANAGEMENT SYSTEM
+
+## Salary & Payroll, Global Feature Management, Complete Data Backup, Subscription Packages, Production-Grade Quality, and Future-Proof Architecture
+
+You are working on an existing Dental Clinic Management System. Your responsibility is to improve and extend the existing application by implementing the requirements in this document.
+
+The objective is to develop a professional, secure, reliable, fast, responsive, user-friendly, maintainable, and future-proof Dental Clinic Management System suitable for real-world clinical operations.
+
+**This is an existing project containing potentially critical patient and clinical records. Preserving all existing data and protecting patient information is more important than implementing any new feature.**
+
+---
+
+# NON-NEGOTIABLE REQUIREMENT: ZERO DATA LOSS AND PATIENT RECORD PROTECTION
+
+This is the highest-priority requirement of the entire project.
+
+The application may contain critical patient information, including medical and dental histories, diagnoses, treatments, prescriptions, X-rays, clinical documents, appointments, payments, and historical records.
+
+**Under no circumstances should development, feature implementation, bug fixing, database migration, dependency updates, or application restructuring intentionally delete, overwrite, corrupt, reset, or unnecessarily modify existing data.**
+
+Treat all existing patient and clinic data as valuable production data.
+
+## 1. Absolute Data Preservation Rules
+
+- Never reset the existing production database.
+- Never drop, truncate, recreate, or overwrite existing production tables simply to implement a new feature.
+- Never delete existing patient records to simplify development.
+- Never replace existing database records with mock, sample, or demonstration data.
+- Never overwrite historical prescriptions, diagnoses, treatments, payments, or clinical notes without an explicitly authorized and audited correction process.
+- Never modify existing patient IDs, doctor IDs, clinic IDs, visit IDs, or other important relational identifiers unnecessarily.
+- Never break relationships between patients, doctors, appointments, visits, treatments, prescriptions, payments, and other records.
+- Never remove existing uploaded documents, X-rays, images, prescription PDFs, or other attachments.
+- Never introduce a database migration that may cause data loss without a verified backup and recovery plan.
+- Never use destructive SQL commands or scripts on production data without explicit authorization, a verified recovery point, and a safe migration strategy.
+- Never assume that an empty or inaccessible database is safe to initialize.
+- Never replace real application data with test data during development or deployment.
+
+## 2. Mandatory Backup Before Risky Changes
+
+Before performing any potentially risky operation:
+
+1. Inspect the current database and application architecture.
+2. Identify all affected tables, relationships, records, files, and workflows.
+3. Generate or verify a complete backup of the relevant production data.
+4. Include uploaded clinical attachments and associated metadata where applicable.
+5. Verify backup integrity and ensure that the backup is accessible.
+6. Record the backup ID, generation date, and time.
+7. Prepare a recovery or rollback strategy.
+8. Only then proceed with the planned change.
+
+**If a verified backup cannot be created or its integrity cannot be established, do not proceed with a potentially destructive operation.**
+
+For high-risk database changes, use a tested restoration procedure wherever possible.
+
+## 3. Safe Database Migrations
+
+All database changes must use controlled, versioned, non-destructive migrations.
+
+- Prefer adding new tables, columns, indexes, and relationships without disturbing existing records.
+- Preserve existing data types, IDs, timestamps, and relationships wherever possible.
+- Use backward-compatible changes when practical.
+- If data transformation is necessary, validate the source and destination records.
+- Verify record counts and important relationships before and after migration.
+- Use transactions where supported.
+- Maintain migration history.
+- Include a rollback or recovery strategy.
+- Never silently discard fields or historical information.
+- Do not remove old columns or tables until their data has been safely migrated, verified, and explicitly approved for removal.
+
+## 4. Data Integrity Verification
+
+After every significant update or migration, verify:
+
+- Existing patient record counts.
+- Existing doctor and staff records.
+- Patient-to-doctor relationships.
+- Patient visit histories.
+- Treatment and prescription histories.
+- Appointment records.
+- Payment and outstanding due records.
+- Uploaded files and attachments.
+- Existing user accounts and roles.
+- Important database relationships.
+- Historical clinical and financial records.
+
+Compare the results with the pre-update state.
+
+Investigate any unexpected differences immediately.
+
+**If any critical record is missing, corrupted, duplicated, or incorrectly associated, treat the update as unsuccessful and initiate recovery before proceeding.**
+
+## 5. Separate Development and Production Environments
+
+- Never use production patient records as disposable test data.
+- Use a separate development/testing environment.
+- Use synthetic or properly anonymized data for testing.
+- Never let test scripts accidentally execute against the production database.
+- Protect production environment variables and database credentials.
+- Require explicit environment verification before running migrations or data-modifying scripts.
+
+## 6. Clinical Record Protection
+
+Patient clinical history must be preserved throughout the lifetime of the application.
+
+- Do not silently overwrite finalized clinical records.
+- Maintain historical prescriptions and treatment records.
+- Keep previous visit information accessible to authorized users.
+- Use audit history for important clinical changes.
+- Use archival or soft deletion where appropriate.
+- Make corrections through authorized revision mechanisms.
+- Preserve the original information and record who made a correction and when.
+- Ensure that disabling a feature, changing a subscription, or changing a user's permissions never deletes clinical records.
+
+**Data preservation is not optional. It takes priority over convenience, speed of implementation, and new feature development. If a requested implementation cannot be completed safely, explain the risk and propose a safer alternative.**
+
+---
+
+# CRITICAL INSTRUCTIONS BEFORE DEVELOPMENT
+
+First, inspect and understand the entire existing project, including:
+
+- Frontend and backend architecture.
+- Programming languages and frameworks.
+- Database schema, tables, relationships, and existing records.
+- Authentication and authorization systems.
+- Existing user roles and permissions.
+- Developer Profile and administrative controls.
+- Existing modules and their dependencies.
+- Current backup, export, and file-storage mechanisms.
+- Existing UI components and design system.
+- Current deployment and environment configuration.
+- Existing validation, error handling, and testing mechanisms.
+
+Do not start coding before understanding the existing implementation.
+
+**Do not rebuild the application from scratch.**
+
+Do not unnecessarily replace existing components, redesign working modules, duplicate existing functionality, or break current workflows.
+
+Reuse the existing architecture, components, database relationships, coding conventions, and dependencies wherever practical.
+
+Do not introduce mock data or hardcoded sample records into production functionality.
+
+Implement actual frontend, backend, and database functionality with proper authorization and validation.
+
+---
+
+# MODULE 1: SALARY & PAYROLL MANAGEMENT
+
+## 1. Access Permissions
+
+Create a Salary & Payroll Management module with the following access restrictions:
+
+- **Developer:** Full access according to the existing developer permission structure.
+- **Super Admin / Main Doctor:** Full access to salary structures, payroll, salary sheets, payment records, and reports.
+- **Other Doctors:** No access to salary management, payroll records, or other doctors' compensation information.
+
+Enforce permissions at both frontend and backend/API levels.
+
+Hiding a menu item is not sufficient security.
+
+Unauthorized users must not be able to access payroll information through direct URLs, API requests, modified request parameters, or other alternative methods.
+
+## 2. Doctor Salary Types
+
+Each doctor must be configurable under one of three compensation structures.
+
+### A. Monthly Fixed Salary
+
+- Set a fixed monthly salary.
+- Allow additional allowances.
+- Allow deductions.
+- Automatically calculate net payable salary.
+
+Formula:
+
+`Net Salary = Monthly Salary + Allowances - Deductions`
+
+### B. Daily Salary
+
+- Set a daily payment rate for each doctor.
+- Calculate salary based on approved working days.
+- Allow allowances and deductions.
+
+Formula:
+
+`Net Salary = (Daily Rate × Approved Working Days) + Allowances - Deductions`
+
+Inspect the existing project first.
+
+If an attendance module exists, integrate with it. Otherwise, provide an authorized manual working-day entry mechanism with proper audit logs.
+
+### C. Commission-Based Salary
+
+Allow commission to be calculated using a configurable percentage.
+
+The commission basis must be selectable individually for each doctor:
+
+- Total eligible treatment revenue.
+- Actual collected payments.
+- Eligible treatment or service charges.
+
+Formula:
+
+`Commission = Eligible Revenue × Commission Rate / 100`
+
+`Net Salary = Commission + Allowances - Deductions`
+
+Exclude canceled, refunded, reversed, or otherwise ineligible transactions from commission calculations.
+
+The calculation basis and percentage must be configurable individually for each doctor.
+
+## 3. Salary Structure Management
+
+For every doctor, authorized users must be able to configure:
+
+- Doctor name and ID.
+- Salary type.
+- Monthly salary, daily rate, or commission percentage.
+- Commission calculation basis, where applicable.
+- Effective date.
+- Optional review date.
+- Allowances.
+- Deductions.
+- Notes.
+- Active/inactive status.
+
+Maintain salary structure history.
+
+Changes must not silently modify finalized payroll records from previous months.
+
+## 4. Monthly Salary Sheet
+
+Create a professional monthly salary sheet.
+
+Allow authorized users to filter by:
+
+- Month.
+- Year.
+- Individual doctor or all doctors.
+- Salary type.
+- Payroll status.
+
+Suggested columns:
+
+| Field | Description |
+|---|---|
+| Doctor | Doctor's name |
+| Salary Type | Monthly / Daily / Commission |
+| Base Rate | Monthly salary or daily rate |
+| Working Days | Approved working days, where applicable |
+| Eligible Revenue | Revenue eligible for commission |
+| Commission Rate | Applicable percentage |
+| Gross Salary | Calculated gross amount |
+| Allowances | Additional payments |
+| Deductions | Total deductions |
+| Net Payable | Final payable amount |
+| Paid Amount | Total payments made |
+| Due Amount | Remaining amount |
+| Status | Draft / Finalized / Partially Paid / Paid |
+
+Only display fields relevant to the selected salary type.
+
+## 5. Salary Payment Management
+
+Allow authorized users to record:
+
+- Full salary payments.
+- Partial salary payments.
+- Multiple payments against one payroll record.
+- Payment date.
+- Payment method: Cash, Bank Transfer, Mobile Financial Service, or Other.
+- Transaction/reference number.
+- Notes.
+
+Formula:
+
+`Due Amount = Net Payable - Total Paid`
+
+Payment statuses:
+
+- Pending.
+- Partially Paid.
+- Paid.
+
+Prevent duplicate payment records and accidental overpayments.
+
+Any authorized adjustment must require a reason and be recorded in the audit log.
+
+## 6. Payroll Status and Reports
+
+Support:
+
+- Draft.
+- Finalized.
+- Partially Paid.
+- Paid.
+
+Once finalized, payroll calculations must be stored as historical snapshots.
+
+Later changes to salary structures or treatment records must not silently change finalized payroll.
+
+Corrections must use an authorized adjustment process with a reason and audit history.
+
+Provide:
+
+- Monthly salary reports.
+- Individual doctor salary history.
+- Outstanding salary reports.
+- Paid and unpaid salary reports.
+- Commission reports.
+- Payroll summaries.
+
+Provide CSV, Excel, or PDF exports where supported by the existing project.
+
+## 7. Suggested Database Structure
+
+Inspect the existing schema before creating tables. Reuse existing doctor, user, payment, and treatment relationships.
+
+If appropriate, introduce:
+
+- `doctor_salary_structures`
+- `salary_payrolls`
+- `salary_payroll_items`
+- `salary_payments`
+- `salary_adjustments`
+- `payroll_audit_logs`
+
+Use precise decimal data types for monetary values.
+
+Currency: BDT (৳).
+
+---
+
+# MODULE 2: DEVELOPER PROFILE – CENTRALIZED GLOBAL FEATURE MANAGEMENT
+
+## 1. Centralized Feature Management
+
+Inside the Developer Profile, create a centralized Feature Management section.
+
+The Developer must be able to control the availability of individual application modules through ON/OFF toggle buttons.
+
+Examples include:
+
+- Prescription Module.
+- Salary & Payroll Management.
+- Data Backup & Export.
+- Patient Management.
+- Doctor Management.
+- Appointment Management.
+- Treatment Management.
+- Payment Management.
+- Reports and Analytics.
+- Any other existing or future module.
+
+Do not hardcode the system to support only these examples.
+
+Design it so additional modules and features can be registered in the future.
+
+For each feature, support:
+
+- Feature name.
+- Unique feature key.
+- Description.
+- Module/category.
+- Globally enabled/disabled status.
+- Availability by subscription package.
+- Applicable user roles.
+- Optional configuration.
+- Creation and last-updated timestamps.
+
+## 2. Feature Toggle Behavior
+
+When a feature is ON:
+
+- It is available to users who have the required permissions.
+- Its menu item and interface are visible to authorized users.
+- Its functionality and authorized API endpoints are accessible.
+
+When a feature is OFF:
+
+- Hide its navigation items and interface.
+- Block its pages and direct URL access.
+- Block its backend/API operations.
+- Prevent unauthorized operations through alternative requests.
+- Preserve all existing data and historical records.
+- Do not delete or modify stored information.
+
+When enabled again, previously saved data and functionality must become available according to the user's permissions and package entitlements.
+
+## 3. Developer-Only Control
+
+- Only the Developer can change global feature toggles.
+- Main Doctor / Super Admin and other doctors cannot modify developer-only global feature settings.
+- Maintain audit logs for toggle changes, including feature name, previous status, new status, timestamp, and responsible developer.
+
+The Developer must be able to:
+
+1. Enable or disable individual features globally.
+2. Temporarily disable problematic modules.
+3. Enable newly developed modules when ready.
+4. Disable outdated modules without deleting their data.
+5. Register new feature flags without redesigning the application.
+6. Control feature availability by subscription package.
+7. Configure applicable role permissions separately.
+
+**Important:** Global feature availability, package entitlements, and role permissions must remain separate controls.
+
+Use centralized feature-flag configuration rather than implementing separate, inconsistent toggle mechanisms throughout the application.
+
+---
+
+# MODULE 3: COMPLETE DATA BACKUP & CSV EXPORT SYSTEM
+
+Implement a comprehensive data backup and export facility for the entire Dental Clinic Management System.
+
+The system must support complete clinic backups as well as restricted individual-doctor backups.
+
+## 1. Backup Access Permissions
+
+### Developer
+
+The Developer must have access to the complete backup and export system, subject to the existing security architecture.
+
+### Super Admin / Main Doctor
+
+The Super Admin / Main Doctor must have access to the complete clinic data backup and export system.
+
+They must be able to export authorized clinic records across all doctors, patients, treatments, payments, prescriptions, payroll, and other modules.
+
+### Other Doctors
+
+Ordinary doctors must only be able to download their own permitted data.
+
+They must not be able to:
+
+- Download another doctor's patient records.
+- Export the complete clinic database.
+- Access another doctor's financial or payroll information.
+- Bypass restrictions using modified filters, API requests, or direct URLs.
+
+The backend must automatically restrict each ordinary doctor's export scope to records associated with that authenticated doctor account.
+
+Never trust a doctor ID supplied by the frontend to determine export permissions.
+
+Apply permissions at both frontend and backend/API levels.
+
+## 2. Complete Clinic Data Backup
+
+For Developer and Super Admin / Main Doctor, provide an option named:
+
+**Complete Clinic Data Backup**
+
+The backup must cover all relevant application data, including existing and future modules where applicable.
+
+Inspect the actual database schema and relationships.
+
+Include applicable data such as:
+
+- Patient profiles and registration details.
+- Patient contact information and medical/dental history.
+- Patient IDs and clinic IDs.
+- Doctor profiles and records.
+- Patient visits and appointments.
+- Diagnoses and treatment records.
+- Clinical notes and examination findings.
+- Prescription records and prescription history.
+- Medicine catalog and medicine-related records.
+- Treatment plans and follow-up information.
+- Patient payments and transaction histories.
+- Outstanding balances and due records.
+- Salary structures and payroll records.
+- Salary payments and adjustments.
+- User accounts and role assignments, where permitted.
+- Clinic settings and configuration.
+- Reports and operational records.
+- Audit logs and activity history.
+- Other existing module data.
+
+Where uploaded files exist, include relevant attachments such as:
+
+- Patient documents.
+- X-rays and dental images.
+- Prescription PDFs.
+- Other uploaded clinical documents.
+
+Preserve relationships, original IDs, timestamps, and historical information.
+
+**Security restriction:** Never include passwords, password hashes, authentication tokens, session cookies, API secrets, private keys, or other credentials in ordinary CSV exports.
+
+If a secure full-system recovery backup requires sensitive configuration, handle it separately using an appropriately protected backup mechanism.
+
+## 3. CSV Export and Backup Package
+
+Support two complementary export formats.
+
+### A. Individual CSV Exports
+
+Allow authorized users to export data from individual modules.
+
+Examples:
+
+- `Patients.csv`
+- `Doctors.csv`
+- `Appointments.csv`
+- `Visits.csv`
+- `Treatments.csv`
+- `Prescriptions.csv`
+- `Payments.csv`
+- `Salary_Payroll.csv`
+- `Salary_Payments.csv`
+- `Medicine_Database.csv`
+- `Audit_Logs.csv`
+
+Use appropriate filenames and include relevant column headers.
+
+### B. Complete Backup Package
+
+Provide an option to download a complete backup package, preferably as a ZIP file containing:
+
+- Separate CSV files for each supported data module.
+- Relevant uploaded files and attachments, where applicable.
+- A backup manifest.
+- Backup generation date and time.
+- Selected date range and filters.
+- Exported record counts for each module.
+- Database/schema version or backup format version.
+- A README explaining the contents and relationships between exported files.
+
+Organize the backup into clear folders.
+
+Example:
+
+`Clinic_Backup_2026-11-17.zip`
+
+Do not create a single confusing CSV containing unrelated database tables.
+
+Use separate, clearly named CSV files and preserve relational IDs.
+
+### C. Complete Recovery Backup
+
+CSV and ZIP exports are useful for data portability but do not necessarily provide a complete database recovery mechanism.
+
+Where supported by the infrastructure, provide a separate secure database-level backup mechanism capable of preserving:
+
+- Database schema.
+- Database records.
+- Relationships and constraints.
+- Relevant indexes.
+- Required application data.
+- Uploaded files and attachments.
+
+Keep recovery backups protected and accessible only to appropriately authorized administrators.
+
+Do not expose database-level credentials or secrets in ordinary exports.
+
+Clearly distinguish between:
+
+1. CSV data exports.
+2. Structured application backup packages.
+3. Full database recovery backups.
+
+## 4. Date-Based Backup and Export Filters
+
+Provide flexible date filters.
+
+Authorized users should be able to select:
+
+- All Time / Complete Data.
+- Today.
+- Yesterday.
+- Last 7 Days.
+- Last 30 Days.
+- Last 90 Days.
+- This Month.
+- Previous Month.
+- This Year.
+- Custom Date Range.
+
+For a custom range, provide:
+
+- Start Date.
+- End Date.
+
+Allow filtering by relevant module-specific dates, including:
+
+- Patient registration date.
+- Appointment date.
+- Visit date.
+- Treatment date.
+- Payment date.
+- Prescription date.
+- Payroll month or payment date.
+- Record creation or update date.
+
+Use the appropriate date field for each module and clearly indicate which date field is being used.
+
+For example, filtering payments by date must use payment dates, not patient registration dates.
+
+Where related records are required to understand exported data, preserve the necessary relationships and explain the date-filter behavior.
+
+Do not silently omit related records in a way that makes the backup incomplete or misleading.
+
+The Complete Data Backup option must remain available without date restrictions.
+
+## 5. Doctor-Specific Backup
+
+Ordinary doctors must have a separate option:
+
+**Download My Data Backup**
+
+Depending on existing database relationships and permissions, this may include:
+
+- Their own patient records.
+- Their own patient visits.
+- Their own treatment records.
+- Their own prescriptions.
+- Their own appointment records.
+- Their own relevant clinical notes.
+- Other permitted doctor-specific records.
+
+Do not include:
+
+- Other doctors' private records.
+- Other doctors' patient data.
+- Clinic-wide financial reports.
+- Salary structures or payroll information.
+- Super Admin-only information.
+- Developer settings or internal configuration.
+
+Apply date filters to this doctor-specific backup as well.
+
+The doctor ID must be derived securely from the authenticated session on the backend, not trusted from user-submitted parameters.
+
+## 6. Backup Preview and Confirmation
+
+Before generating a backup, show a professional preview containing:
+
+- Backup type.
+- Selected date range.
+- Selected modules.
+- User/doctor scope.
+- Estimated record counts.
+- Estimated attachment count and file size, if available.
+- Export format.
+
+Provide a confirmation step before generating the export.
+
+Show a clear loading/progress state where technically possible.
+
+When complete, display:
+
+- Backup generation status.
+- Filename.
+- Generation date and time.
+- Total exported records.
+- Per-module record counts.
+- Any skipped or failed items.
+- Download action.
+
+Never report a successful backup if the export failed or was incomplete.
+
+## 7. Backup History and Audit Logs
+
+Maintain a Backup History section for authorized administrators.
+
+Record:
+
+- Backup ID.
+- Backup type.
+- Requested by.
+- User role.
+- Generation date and time.
+- Date range.
+- Selected modules.
+- Export format.
+- Number of exported records.
+- File size.
+- Success / Failed / Partial status.
+- Failure reason, if applicable.
+
+Ordinary doctors should only see their own backup history.
+
+Developer and Super Admin / Main Doctor may see clinic-wide backup history according to their permissions.
+
+Maintain audit logs for backup creation, downloads, and administrative actions.
+
+## 8. Data Integrity, Reliability, and Security
+
+- Use secure server-side export generation.
+- Enforce role-based access control on every export request.
+- Prevent insecure direct object reference (IDOR) vulnerabilities.
+- Validate all date filters and module selections on the backend.
+- Prevent SQL injection and unsafe file access.
+- Prevent unauthorized access to generated backup files.
+- Use secure temporary download links or authenticated downloads.
+- Do not expose backup files publicly.
+- Apply appropriate file access restrictions and expiration/cleanup policies.
+- Prevent one user from accessing another user's generated backup.
+- Use pagination, streaming, or background jobs for large exports.
+- Avoid loading the entire database into application memory.
+- Use consistent database snapshots or transactions where appropriate.
+- Handle large attachments safely.
+- Report missing or inaccessible files in the manifest.
+- Avoid duplicate records.
+- Preserve original IDs, dates, and relationships.
+- Record errors without exposing sensitive internal information.
+
+For CSV files:
+
+- Handle commas, quotation marks, line breaks, Unicode, and Bangla text correctly.
+- Use UTF-8 encoding, preferably with Excel-compatible UTF-8 BOM where appropriate.
+- Escape values correctly.
+- Protect against CSV formula injection in untrusted text fields.
+- Preserve date and monetary values consistently.
+
+## 9. Backup Restoration and Recovery Readiness
+
+Design the backup package to support future restoration or migration.
+
+If a restore feature is implemented, restrict it to Developer and Super Admin / Main Doctor with explicit confirmation and appropriate authorization.
+
+A restore operation must:
+
+- Validate backup format and integrity.
+- Check schema/version compatibility.
+- Preview what will be restored.
+- Prevent accidental overwriting or duplicate insertion.
+- Provide a pre-restore backup or recovery point.
+- Use transaction-safe operations where possible.
+- Maintain an audit log.
+- Clearly report success, partial success, or failure.
+
+Do not expose restore functionality to ordinary doctors.
+
+If full restoration cannot safely be implemented within the current architecture, implement a properly structured, documented backup package and keep restoration as a separate future capability.
+
+**Never claim that CSV export alone is a complete restorable database backup.**
+
+---
+
+# MODULE 4: OVERALL APPLICATION QUALITY AND PROFESSIONAL STANDARDS
+
+The entire Dental Clinic Management System—not just the newly added modules—must be user-friendly, reliable, secure, fast, responsive, and professionally designed.
+
+The application is intended for real-world dental clinic operations.
+
+Doctors and clinic staff must be able to manage patients properly, efficiently, and confidently.
+
+## 1. User-Friendly Experience
+
+- Keep navigation simple and consistent.
+- Use clear labels and understandable terminology.
+- Maintain a clean, modern, professional medical application interface.
+- Make frequently used actions easy to find.
+- Avoid unnecessary steps and confusing workflows.
+- Provide helpful empty states, loading states, success messages, and error messages.
+- Use confirmation dialogs for destructive or sensitive operations.
+- Provide useful search, sorting, and filtering.
+- Ensure forms are easy to complete and validate.
+- Make patient information easy to find.
+- Keep the interface responsive on desktop, tablet, and mobile.
+- Ensure important patient information is readable and well organized.
+- Minimize repetitive data entry.
+- Use sensible defaults where appropriate.
+- Provide clear feedback after important actions.
+
+## 2. Patient Management Reliability
+
+Patient management is a core function.
+
+Ensure that:
+
+- Every patient has a unique and reliable identifier.
+- Duplicate patient registration is prevented or clearly flagged.
+- Patient profiles show relevant history and previous visits.
+- Doctors can review previous treatments and prescriptions they are authorized to access.
+- Payment history and outstanding dues are accurate.
+- Follow-up dates and visit histories remain consistent.
+- Editing patient information does not accidentally erase historical clinical records.
+- Patient records remain correctly associated with the relevant doctor and clinic.
+- Search works reliably using patient name, phone number, patient ID, and clinic ID where supported.
+
+## 3. Clinical Data Integrity
+
+- Preserve historical visits, prescriptions, treatments, and payments.
+- Do not silently overwrite finalized clinical or financial records.
+- Use appropriate revision or audit history for important changes.
+- Prevent accidental deletion of important patient information.
+- Use soft deletion or archival where appropriate.
+- Ensure relationships between patients, doctors, visits, treatments, prescriptions, and payments remain valid.
+- Clearly distinguish current records from archived or inactive records.
+- Maintain accurate timestamps and record ownership.
+- Ensure that corrections to historical records are authorized and auditable.
+
+## 4. Security and Privacy
+
+- Implement proper authentication and authorization.
+- Enforce role permissions on the backend.
+- Protect patient and clinical information.
+- Ensure doctors can only access information permitted by their role and clinic relationships.
+- Prevent unauthorized access through direct routes and API requests.
+- Validate all user inputs on the server.
+- Use secure session and authentication practices.
+- Avoid exposing sensitive patient information in logs or error messages.
+- Keep developer-only functionality separate from clinical user functionality.
+- Protect sensitive financial and payroll information.
+- Apply the principle of least privilege.
+- Secure uploaded files and prevent unauthorized file access.
+- Protect sensitive administrative operations with appropriate confirmation and audit logging.
+
+Protect the application against common web security vulnerabilities, including:
+
+- SQL injection.
+- Cross-site scripting (XSS).
+- Cross-site request forgery (CSRF), where applicable.
+- Broken access control.
+- Insecure direct object references (IDOR).
+- Insecure file uploads.
+- Path traversal.
+- Session-related vulnerabilities.
+- Exposure of secrets or sensitive information.
+
+Use appropriate protections based on the existing framework and deployment architecture.
+
+## 5. Reliability and Performance
+
+- Optimize database queries and indexes.
+- Avoid unnecessary repeated API calls.
+- Use pagination for large patient and transaction lists.
+- Handle network failures gracefully.
+- Prevent duplicate form submissions and duplicate payment entries.
+- Use appropriate database transactions for critical operations.
+- Provide clear error handling and recovery behavior.
+- Ensure new modules do not slow down existing modules.
+- Avoid unnecessary frontend or backend dependencies.
+- Prevent inconsistent database states.
+- Handle concurrent updates safely where applicable.
+- Ensure that failed operations do not incorrectly display success messages.
+- Preserve user-entered information where possible when an operation fails.
+
+## 6. Professional Design Consistency
+
+- Maintain a consistent design system across all modules.
+- Use consistent typography, spacing, colors, buttons, tables, dialogs, and forms.
+- Use professional layouts suitable for a dental clinic.
+- Ensure all dashboards display accurate and relevant information.
+- Avoid clutter and unnecessary visual elements.
+- Ensure exported reports and documents are clean, readable, and professionally formatted.
+- Maintain consistent interactions across the application.
+- Use appropriate visual hierarchy for important clinical and financial information.
+
+## 7. Production-Grade Performance, Responsiveness, and Quality Standards
+
+The entire application must meet professional, production-grade software engineering standards.
+
+It must not merely look good; it must also perform efficiently, behave consistently, and remain dependable during real-world clinic operations.
+
+### A. Fast Performance and Optimization
+
+- Ensure fast initial loading and smooth navigation between modules.
+- Optimize frontend rendering, backend processing, database queries, and API response times.
+- Avoid unnecessary API requests, repeated database queries, redundant calculations, and inefficient rendering.
+- Implement pagination, lazy loading, caching, and background processing where appropriate.
+- Optimize images, uploaded documents, and other static assets.
+- Ensure large patient lists, transaction histories, reports, and backup operations do not freeze the interface.
+- Avoid memory leaks and unnecessary resource consumption.
+- Optimize for both slower internet connections and modern devices.
+- Use appropriate database indexing and efficient query patterns.
+- Avoid loading large datasets unnecessarily.
+- Do not sacrifice data accuracy or security for performance.
+
+### B. Fully Responsive User Interface
+
+Ensure that every module and screen works properly on:
+
+- Desktop computers.
+- Laptops.
+- Tablets.
+- Android smartphones.
+- iPhones and other supported mobile devices.
+
+Requirements:
+
+- No horizontal overflow or broken layouts.
+- Tables must remain usable on smaller screens through appropriate responsive layouts.
+- Forms, buttons, dialogs, navigation, charts, and dashboards must adapt to screen size.
+- Touch controls must be appropriately sized and easy to operate.
+- Important patient and clinical information must remain readable.
+- Maintain consistent functionality across supported browsers and screen sizes.
+- Ensure responsive layouts do not hide important patient or financial information.
+
+### C. Professional User Experience
+
+- Maintain a clean, modern, consistent, and professional dental clinic management interface.
+- Use a consistent design system, typography, spacing, colors, icons, and component styles.
+- Provide clear navigation and logical workflows.
+- Minimize unnecessary clicks and repetitive data entry.
+- Use meaningful validation messages and helpful error explanations.
+- Provide loading indicators, empty states, success feedback, and failure notifications.
+- Prevent accidental duplicate submissions and destructive actions.
+- Maintain accessibility considerations, including readable contrast, keyboard usability, and clear labels.
+- Ensure the application feels consistent across every module.
+
+### D. Reliability and Error Handling
+
+- Handle unexpected errors, network interruptions, and server failures gracefully.
+- Prevent duplicate transactions, payments, appointments, and records where applicable.
+- Use database transactions for critical financial and clinical operations.
+- Ensure that partially completed operations do not leave inconsistent records.
+- Implement appropriate validation on both frontend and backend.
+- Prevent race conditions and conflicting updates where relevant.
+- Provide safe recovery behavior when an operation fails.
+- Never display a successful operation message unless the operation actually succeeds.
+- Preserve user-entered data where possible when validation or network errors occur.
+- Log errors securely without exposing sensitive patient information.
+
+### E. Quality Assurance and Regression Testing
+
+Before releasing changes:
+
+- Test all newly implemented functionality.
+- Test existing modules that may be affected.
+- Verify permissions using different user roles.
+- Test important workflows from beginning to end.
+- Test validation, failure scenarios, and edge cases.
+- Check responsive behavior across desktop, tablet, and mobile.
+- Check performance with realistic data volumes.
+- Verify database integrity and historical records.
+- Fix errors introduced by new changes before considering the work complete.
+
+**Acceptance Standard:** The application must be suitable for daily professional dental clinic operations. It should be fast, responsive, secure, reliable, easy to use, visually consistent, and maintainable. These standards apply to the entire application and every future module—not only newly developed features.
+
+---
+
+# MODULE 5: FUTURE-PROOF ARCHITECTURE AND EASY FEATURE EXTENSION
+
+The application must be developed as a scalable, modular, and future-proof product.
+
+The client may request new features, modifications, bug fixes, integrations, or changes in business requirements at any time.
+
+The application must allow future development without rebuilding the entire system, breaking existing functionality, or losing existing data.
+
+**The Developer must retain comprehensive technical and administrative control over application features, modules, configurations, and future package management.**
+
+## 1. Modular and Extensible Architecture
+
+Design the application so new modules and features can be added independently wherever practical.
+
+Requirements:
+
+- Use a clean, modular, maintainable architecture.
+- Keep frontend, backend, database, authentication, authorization, and business logic properly organized.
+- Avoid unnecessary coupling between unrelated modules.
+- Reuse existing components, services, utilities, and database relationships.
+- Maintain consistent coding conventions and architecture.
+- Make it easy to add new modules without rewriting existing modules.
+- Make it easy to modify existing features without affecting unrelated functionality.
+- Keep configuration and feature availability centrally manageable.
+- Avoid hardcoding business rules in multiple places.
+- Use reusable services and centralized permission checks.
+- Maintain clear technical documentation for future developers.
+
+Potential future modules may include:
+
+- Inventory and stock management.
+- Dental laboratory management.
+- Advanced appointment scheduling.
+- SMS or WhatsApp notifications.
+- Online patient portals.
+- Doctor attendance management.
+- Advanced financial reports.
+- Multi-branch clinic management.
+- Online payments.
+- Automated reminders.
+- Additional prescription features.
+
+These should be implementable as new modules or extensions without rebuilding the entire application.
+
+## 2. Developer's Complete Feature Control
+
+The Developer must have a centralized Developer Control Panel.
+
+Every new module or feature added in the future should be capable of being registered in the centralized feature management system.
+
+For each feature, support:
+
+- Feature name.
+- Unique feature key.
+- Description.
+- Module/category.
+- Enabled or disabled status.
+- Availability by subscription package.
+- Applicable user roles.
+- Optional configuration.
+- Creation and last-updated timestamps.
+
+The Developer must be able to:
+
+1. Enable or disable any registered feature globally.
+2. Control which features are available to different subscription packages.
+3. Control whether a feature is available to particular roles.
+4. Temporarily disable a problematic feature without deleting its data.
+5. Enable a newly developed feature when ready.
+6. Disable an outdated feature while preserving historical records.
+7. Introduce new feature flags without redesigning the application.
+
+When a feature is disabled, its functionality must be blocked at the backend/API level as well as hidden from the frontend.
+
+Disabling a feature must never delete its data, database records, or historical information.
+
+## 3. Future Subscription-Based Package Management
+
+Prepare the application architecture for a future subscription-based business model.
+
+The system may eventually offer different packages, such as:
+
+- Basic.
+- Standard.
+- Professional.
+- Premium.
+- Enterprise.
+
+Package names must be configurable by the Developer rather than permanently hardcoded.
+
+The Developer should be able to create, edit, activate, deactivate, and configure packages from the Developer Control Panel.
+
+### Package Feature Management
+
+For each package, the Developer should be able to select which features are included.
+
+Illustrative example:
+
+| Feature | Basic | Standard | Professional | Enterprise |
+|---|---|---|---|---|
+| Patient Management | ON | ON | ON | ON |
+| Doctor Management | Limited | ON | ON | ON |
+| Appointment Management | ON | ON | ON | ON |
+| Prescription Module | ON | ON | ON | ON |
+| Salary & Payroll | OFF | ON | ON | ON |
+| Data Backup & Export | Limited | ON | ON | ON |
+| Advanced Reports | OFF | Limited | ON | ON |
+| Inventory Management | OFF | OFF | ON | ON |
+| Multi-Branch Management | OFF | OFF | OFF | ON |
+| Advanced Analytics | OFF | OFF | ON | ON |
+
+This is only an example.
+
+The Developer must be able to customize package features and permissions at any time.
+
+Do not hardcode package restrictions into individual frontend components or backend routes.
+
+Use a centralized package entitlement system.
+
+### Additional Package Configurations
+
+Keep the architecture ready for configurable limits, including:
+
+- Maximum number of doctors.
+- Maximum number of staff accounts.
+- Maximum number of patients, if commercially required.
+- Number of clinic branches.
+- Storage capacity.
+- Monthly backup/export limits, if applicable.
+- Access to advanced reports.
+- Access to premium modules.
+- Other configurable usage limits.
+
+Limits must be optional and configurable.
+
+Do not impose arbitrary limits unless the Developer configures them.
+
+## 4. Separate Global Feature Toggles, Package Entitlements, and Role Permissions
+
+This is a critical architectural requirement.
+
+The system must use three separate permission layers.
+
+**Layer 1 – Global Developer Feature Control**
+
+Determines whether a feature is globally enabled or disabled by the Developer.
+
+**Layer 2 – Subscription Package Entitlements**
+
+Determines whether a particular clinic's package includes that feature.
+
+**Layer 3 – Role-Based Permissions**
+
+Determines whether the logged-in user has permission to use that feature.
+
+A user should only be able to access a feature when all applicable conditions are satisfied.
+
+Example:
+
+- Salary & Payroll is globally enabled by the Developer.
+- The clinic's subscription package includes Salary & Payroll.
+- The logged-in user is Main Doctor / Super Admin.
+
+Access is granted.
+
+However:
+
+- If the Developer globally disables Salary & Payroll, nobody can access it.
+- If the clinic's package does not include Salary & Payroll, that clinic cannot access it.
+- If an ordinary doctor does not have the required role permission, that doctor cannot access it even if the feature is globally enabled and included in the package.
+
+Enforce these rules consistently across frontend navigation, pages, backend APIs, and sensitive database operations.
+
+Never rely only on frontend visibility for access control.
+
+## 5. Future Subscription and Billing Readiness
+
+Prepare the architecture for future subscription management without unnecessarily implementing a complete payment gateway or billing system now.
+
+Keep it ready to support:
+
+- Clinic subscription records.
+- Assigned package.
+- Subscription start date.
+- Subscription expiry date.
+- Trial period.
+- Active, inactive, expired, suspended, and canceled statuses.
+- Package upgrades and downgrades.
+- Subscription renewal.
+- Manual subscription activation by Developer.
+- Subscription history.
+- Future payment and invoice integration.
+
+The Developer should eventually be able to assign or change a clinic's package manually.
+
+When a subscription expires or a package changes, feature access should update according to configured entitlements.
+
+**Important:** Do not automatically delete clinic data or patient records when a subscription expires, a package is downgraded, or a feature becomes unavailable.
+
+Preserve all historical information.
+
+Provide appropriate access restrictions and clear notices instead.
+
+Do not implement recurring billing, payment gateways, or automated subscription charging unless specifically requested in a future development phase.
+
+## 6. Future Multi-Clinic and Multi-Branch Readiness
+
+Even if the current application initially serves a single dental clinic, consider future expansion.
+
+Where appropriate, design the data model so multiple clinics or branches can eventually operate independently.
+
+Keep the architecture ready for:
+
+- Multiple clinic accounts.
+- Multiple branches under one clinic.
+- Branch-specific doctors and staff.
+- Branch-specific patient records and appointments.
+- Branch-specific financial reports.
+- Clinic-level package subscriptions.
+- Centralized clinic administration.
+- Proper tenant-level data isolation.
+
+Do not introduce unnecessary complexity or change the current single-clinic workflow prematurely.
+
+Avoid architectural decisions that would make future multi-clinic expansion unnecessarily difficult.
+
+Any future multi-tenant implementation must enforce strict data isolation between clinics at backend and database levels.
+
+---
+
+# MODULE 6: SAFE UPDATES, BUG FIXES, DATA PRESERVATION, AND MAINTENANCE
+
+Future development must follow a strict data-preservation process.
+
+Whenever a developer adds a feature, fixes a bug, updates dependencies, changes the database, or modifies existing functionality, follow these requirements.
+
+## 1. Safe Development and Database Changes
+
+1. Inspect the current implementation and identify dependencies.
+2. Understand the existing database schema and relationships.
+3. Identify which existing modules and workflows may be affected.
+4. Create or verify a suitable backup before risky changes.
+5. Use controlled, versioned database migrations.
+6. Preserve existing patient, doctor, treatment, prescription, payment, payroll, and other records.
+7. Avoid destructive database changes.
+8. Use backward-compatible changes wherever practical.
+9. Test existing functionality after implementation.
+10. Verify existing users, roles, permissions, and configurations still work.
+11. Provide a rollback or recovery strategy for risky changes.
+12. Document the changes.
+
+Never casually drop, truncate, overwrite, or recreate existing production database tables.
+
+Never reset the production database just to implement a new feature.
+
+If a database schema change is necessary, use safe migrations and preserve existing records.
+
+If a field is no longer needed, prefer a non-destructive deprecation or migration strategy instead of immediately deleting it.
+
+## 2. Version Control and Development Stability
+
+Maintain proper version control and a structured development workflow.
+
+Requirements:
+
+- Use Git or the project's existing version-control system.
+- Keep a stable production version.
+- Separate development/testing changes from production releases.
+- Maintain meaningful commit history.
+- Document database migrations.
+- Track application versions and release changes.
+- Maintain environment-specific configuration.
+- Never commit credentials, API keys, passwords, or secrets.
+- Keep dependencies documented and reasonably up to date.
+- Test changes before deploying them to production.
+
+For significant updates, maintain a release record describing:
+
+- New features.
+- Modified features.
+- Bug fixes.
+- Database changes.
+- Security changes.
+- Known limitations.
+- Rollback considerations.
+
+## 3. Bug Fixing and Maintenance Requirements
+
+When a bug is reported:
+
+- Identify the root cause instead of applying an unnecessary workaround.
+- Reproduce the issue where possible.
+- Check whether the issue affects other modules.
+- Fix the underlying problem.
+- Preserve existing data.
+- Add regression tests where practical.
+- Verify the fix does not introduce new problems.
+- Document the correction.
+
+Avoid making quick changes that solve one problem but break another existing feature.
+
+Future developers should be able to understand the project and continue working on it without needing to rewrite major portions of the application.
+
+## 4. Backup Before Major Changes
+
+Integrate the backup system into the maintenance and update workflow.
+
+Before major database migrations, production updates, or potentially destructive operations:
+
+- Verify that a recent backup exists.
+- Generate a new backup when necessary.
+- Record the backup ID and timestamp.
+- Verify backup integrity where technically possible.
+- Confirm that required attachments are included.
+- Do not proceed with a risky migration if the required backup cannot be generated or verified.
+
+For major changes, provide a recovery plan.
+
+The Developer and Super Admin must retain access to appropriate backup and recovery capabilities according to their permissions.
+
+## 5. Post-Update Data Verification
+
+After significant changes, compare the existing data state with the updated data state.
+
+Where applicable, verify:
+
+- Patient record counts.
+- Doctor and staff record counts.
+- Visit and appointment records.
+- Treatment and prescription records.
+- Payment and due records.
+- Payroll records.
+- Uploaded clinical attachments.
+- User accounts and role assignments.
+- Important relational links.
+
+Check for unexpected missing records, duplicates, broken relationships, or corrupted data.
+
+Document the verification results.
+
+Do not declare an update successful solely because the application starts or the interface loads.
+
+**The application must continue to preserve existing patient data correctly after every update.**
+
+---
+
+# MODULE 7: TESTING AND ACCEPTANCE CRITERIA
+
+Before considering the implementation complete, test all the following areas.
+
+## A. Salary & Payroll
+
+1. Create a monthly salary structure for a doctor.
+2. Create a daily salary structure and calculate salary using approved working days.
+3. Create a commission-based salary structure and verify commission calculations.
+4. Verify allowances and deductions.
+5. Record full and partial salary payments.
+6. Verify paid and due amounts.
+7. Finalize payroll and confirm historical figures remain unchanged after later salary structure changes.
+8. Confirm ordinary doctors cannot access salary information.
+9. Verify adjustments require authorization and audit records.
+
+## B. Global Feature Controls
+
+1. Developer can enable and disable individual modules.
+2. Main Doctor / Super Admin cannot change developer-only global toggles.
+3. Disabling a feature hides its interface and blocks backend functionality.
+4. Direct URL and API access are blocked when a feature is disabled.
+5. Existing records remain preserved when a feature is disabled.
+6. Re-enabling a feature restores authorized access.
+7. Newly added features can be registered in the centralized feature management system.
+
+## C. Backup & Export
+
+1. Developer can generate a complete clinic backup.
+2. Super Admin / Main Doctor can generate a complete clinic backup.
+3. Ordinary doctors can export only their own permitted data.
+4. Verify one doctor cannot access another doctor's backup.
+5. Test all date presets and custom date ranges.
+6. Verify each module uses the correct date field.
+7. Verify complete backup without date restrictions.
+8. Verify individual CSV exports.
+9. Verify ZIP backup package structure and manifest.
+10. Verify Bangla and English text in exported CSV files.
+11. Verify special characters, commas, quotation marks, and line breaks.
+12. Verify CSV formula-injection protection.
+13. Verify backup history and audit logs.
+14. Test large exports and attachment handling.
+15. Verify failed or partial exports are reported accurately.
+16. Confirm unauthorized users cannot access backup files through direct links.
+17. Verify that backup packages preserve original IDs and relationships.
+18. Verify recovery backup integrity where supported.
+
+## D. Future Subscription and Package Management
+
+1. Developer can create and configure subscription packages.
+2. Package names can be changed without modifying application code.
+3. Developer can assign features to individual packages.
+4. Developer can configure optional usage limits.
+5. Global feature toggles work independently of package entitlements.
+6. Role permissions work independently of package entitlements.
+7. A feature excluded from a clinic's package cannot be accessed by that clinic.
+8. Package upgrades and downgrades update feature access correctly.
+9. Subscription expiry does not delete patient or clinic data.
+10. Manual package assignment and subscription changes are recorded in audit history.
+
+## E. Safe Updates and Data Integrity
+
+1. A new feature can be added without rebuilding the application.
+2. New modules can be registered in centralized feature management.
+3. Database migrations preserve existing production data.
+4. Bug fixes do not unnecessarily affect unrelated modules.
+5. Existing functionality continues to work after updates.
+6. Backups can be generated before major changes.
+7. Application versioning and release documentation are maintained.
+8. The architecture remains understandable and maintainable for future developers.
+9. Existing patient record counts and relationships are verified after significant migrations.
+10. Uploaded clinical documents and attachments remain accessible.
+11. No existing patient records are silently deleted or overwritten.
+12. Recovery procedures are documented and tested where possible.
+
+## F. Overall Application Quality
+
+1. Test existing patient registration and management.
+2. Test doctor and role management.
+3. Test visits, appointments, and treatment workflows.
+4. Test prescriptions and historical prescription access.
+5. Test payment calculations and transaction history.
+6. Test search, filters, and dashboards.
+7. Test mobile, tablet, and desktop layouts.
+8. Test role-based access to all relevant modules.
+9. Verify existing functionality remains intact.
+10. Verify database integrity and prevent accidental data loss.
+11. Test performance with realistic data volumes.
+12. Test loading, empty, success, and error states.
+13. Test common security vulnerabilities.
+14. Test network interruptions and failed operations.
+15. Verify the application remains usable on supported browsers.
+
+---
+
+# FINAL IMPLEMENTATION WORKFLOW
+
+Follow this implementation workflow strictly:
+
+### Phase 1: Project Inspection
+
+1. Inspect the entire existing project before coding.
+2. Identify reusable components, database tables, APIs, permissions, and existing export mechanisms.
+3. Understand the existing database and patient data relationships.
+4. Identify potential data-loss risks.
+5. Prepare a clear implementation plan based on the actual codebase.
+
+### Phase 2: Data Safety Preparation
+
+1. Identify the current production and development environments.
+2. Verify the current database backup and recovery mechanisms.
+3. Generate a verified backup before risky modifications.
+4. Document existing database structures and important record relationships.
+5. Establish a safe migration and rollback strategy.
+
+### Phase 3: Implementation
+
+1. Implement features within the existing architecture.
+2. Do not create duplicate modules or unnecessary database structures.
+3. Do not use mock data or hardcoded sample records in production functionality.
+4. Implement real database operations and real backend authorization.
+5. Preserve all existing records and functionality.
+6. Use secure, maintainable, modular code.
+7. Follow the application's existing design system.
+8. Keep the application fast and responsive.
+9. Do not introduce unnecessary dependencies or architectural complexity.
+
+### Phase 4: Testing and Verification
+
+1. Test the implementation against all relevant acceptance criteria.
+2. Test existing workflows that could be affected.
+3. Verify all user roles and permissions.
+4. Verify database integrity and record relationships.
+5. Verify uploaded patient files and clinical attachments.
+6. Test security, reliability, and performance.
+7. Test responsive behavior on desktop, tablet, and mobile.
+8. Fix errors introduced by the changes.
+
+### Phase 5: Final Review and Documentation
+
+Provide a concise implementation report explaining:
+
+- Features implemented.
+- Files and database changes.
+- Permissions implemented.
+- Feature toggle behavior.
+- Backup and export behavior.
+- Subscription and package architecture.
+- Data preservation and migration strategy.
+- Backup verification results.
+- Tests performed.
+- Known limitations or remaining work.
+- Any risks that require additional attention.
+
+Do not claim that a feature, backup, migration, or test is complete unless it has actually been implemented and verified.
+
+---
+
+# IMPORTANT DEVELOPMENT PRIORITIES
+
+Prioritize in this order:
+
+1. **Protection of existing patient records and zero intentional data loss.**
+2. Existing application stability and data preservation.
+3. Security, privacy, and access control.
+4. Patient and clinical data integrity.
+5. Correct business logic and financial calculations.
+6. Reliable backup and recovery.
+7. Maintainable, modular architecture.
+8. Developer feature management.
+9. Subscription package readiness.
+10. Fast performance and responsive design.
+11. Professional and user-friendly experience.
+12. Future scalability and maintainability.
+
+# FINAL PRINCIPLE
+
+Build this system as a long-term, extensible Dental Clinic Management product rather than a one-time project.
+
+The client must be able to request new features, bug fixes, modifications, and integrations in the future.
+
+The Developer must be able to implement, test, enable, disable, maintain, and manage those features without rebuilding the entire application or risking existing patient and clinic data.
+
+The Developer must retain comprehensive control over global feature availability and future subscription package configuration.
+
+Global feature toggles, subscription package entitlements, and user-role permissions must remain independent and work together through centralized authorization.
+
+Every future feature, database migration, bug fix, and system update must integrate safely into the existing application.
+
+The application must remain fast, responsive, secure, reliable, user-friendly, professionally designed, and maintainable.
+
+**MOST IMPORTANT: Patient records are critical clinical information. Never sacrifice existing patient data, clinical history, uploaded documents, or database integrity for new features, convenience, speed of development, or future flexibility. Never perform risky operations without a verified backup and recovery strategy. If data safety cannot be established, stop the operation and explain the risk.**
+
+**The ultimate goal is a professional, production-ready Dental Clinic Management System that can evolve over many years while preserving the integrity, privacy, and availability of every existing patient record.**

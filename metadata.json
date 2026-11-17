@@ -1,0 +1,6 @@
+{
+  "name": "Dental Patient Tracking & Management System",
+  "description": "Centralized clinic-wide dental patient tracking, multi-doctor visit history, diagnosis, treatment, diagnostic test / X-ray expense, and financial due management system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
