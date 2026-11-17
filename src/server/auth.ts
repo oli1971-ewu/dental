@@ -90,8 +90,9 @@ export async function authenticateToken(
 
     // 2. Try Firebase ID token
     try {
-      const decodedFirebase = await adminAuth.verifyIdToken(token);
-      if (decodedFirebase) {
+      if (adminAuth && typeof adminAuth.verifyIdToken === 'function') {
+        const decodedFirebase = await adminAuth.verifyIdToken(token);
+        if (decodedFirebase) {
         // Find user by Firebase UID or email
         let [foundUser] = await db
           .select()
@@ -160,6 +161,7 @@ export async function authenticateToken(
           registrationNumber: foundUser.registrationNumber,
         };
         return next();
+        }
       }
     } catch (fbErr) {
       console.error('Firebase token verification error:', fbErr);

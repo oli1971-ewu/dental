@@ -1,11 +1,31 @@
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import firebaseConfig from '../../firebase-applet-config.json';
+import { createRequire } from 'module';
 
-if (!getApps().length) {
-  initializeApp({
-    projectId: firebaseConfig.projectId,
-  });
+const require = createRequire(import.meta.url);
+
+let firebaseConfig: any = { projectId: 'basic-correlate-f01dl' };
+try {
+  firebaseConfig = require('../../firebase-applet-config.json');
+} catch (e) {
+  console.warn('Could not read firebase-applet-config.json, using fallback projectId:', e);
 }
 
-export const adminAuth = getAuth();
+if (!getApps().length) {
+  try {
+    initializeApp({
+      projectId: firebaseConfig.projectId,
+    });
+  } catch (e) {
+    console.warn('Firebase admin initialization note:', e);
+  }
+}
+
+let auth: any = null;
+try {
+  auth = getAuth();
+} catch (e) {
+  console.warn('Firebase admin getAuth note:', e);
+}
+
+export const adminAuth = auth;
